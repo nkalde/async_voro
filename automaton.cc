@@ -17,7 +17,6 @@ void Automaton::setCells(){
 	for (int i=0;i<lig;i++){
 		this->cells[i] = new Cell[col];	
 		for (int j=0; j<col;j++){
-
 			//add neighbors
 			std::vector<std::pair<int,int>> neighbors(4);
 			neighbors.assign(4,std::make_pair(-1,-1));
@@ -29,11 +28,16 @@ void Automaton::setCells(){
 				neighbors[1] = std::make_pair(i,j+1);
 			if (i<lig-1)//south
 				neighbors[2] = std::make_pair(i+1,j);
-			this->cells[i][j].init(i*col+j+1,i,j);
-			this->cells[i][j].setVonNeumannN(&neighbors);	
-			
-			//add pattern
-			//this->cells[i][j].setPattern();
+			this->getCellIJ(i,j)->init(i*col+j+1,i,j);
+			this->getCellIJ(i,j)->setVonNeumannN(&neighbors);
+			std::cerr << i << "/"<< j << std::endl;	
+		}
+	}
+
+	for (int i=0;i<lig;i++){
+		for (int j=0; j<col;j++){
+			//this->getCellIJ(i,j)->setPattern(...);
+			this->detectPattern(this->getCellIJ(i,j));			
 		}
 	}
 }
@@ -58,6 +62,26 @@ void Automaton::asynchronous_update(int function){
 		if (cnt%(this->lig*this->col) == 0)
 			return;
 	}
+}
+
+void Automaton::detectPattern(Cell *cell){//to put in cell class in the end with communication with other cells
+	bool patternFound=false;
+	std::vector<std::pair<int,int> > *vN = cell->getVonNeumannN();
+	std::vector<bool> localPat = {false,false,false,false,false};
+
+	//if (cell->isSite()){
+	localPat[0] = cell->isSite();
+
+	for (int k=0; k<vN->size();k++){	
+		if (vN->at(k).first != -1){
+			std::pair<int,int> vNK = vN->at(k);
+			localPat[k+1] = (this->getCellIJ(vNK.first,vNK.second))->isSite();//core dumped segfault
+		}
+
+	}
+	std::vector<int> pat_Cl_Nb = Cell::patternsMap[localPat];
+	cell->setPattern(&pat_Cl_Nb);
+	//}
 }
 
 void Automaton::printAutomaton(int function){
@@ -87,6 +111,9 @@ void Automaton::printAutomaton(int function){
 					break;
 				case(4)://neighbors
 					this->getCellIJ(i,j)->printNeighbors();
+					break;
+				case(5)://pattern
+					this->getCellIJ(i,j)->printPattern();
 				default:
 					break;
 			}

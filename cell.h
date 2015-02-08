@@ -12,8 +12,6 @@
 class Cell
 {
 	private:
-		//member attributes
-
 		//sizes
 		static const size_t size_neighbors = 4;
 		static const size_t size_pattern = 3;
@@ -53,7 +51,6 @@ class Cell
 		std::unordered_set<int> idA;
 
 	public:
-
 		//classes
 		static const std::vector<std::vector<bool> > class1;
 		static const std::vector<std::vector<bool> > class2;
@@ -63,8 +60,8 @@ class Cell
 		static const std::vector<std::vector<bool> > class6;
 		static const std::vector<std::vector<bool> > class7;
 		static const std::vector<std::vector<std::vector<bool> > > classes;
-		static const std::map<std::vector<bool>,std::vector<int> > patternsMap;
-		static const std::map<std::vector<bool>,std::vector<int> > computePatternMap();
+		static std::map<std::vector<bool>,std::vector<int> > patternsMap;
+		static std::map<std::vector<bool>,std::vector<int> > computePatternMap();
 		
 		Cell();
 		Cell(int idInit, int i, int j);		
@@ -120,6 +117,7 @@ class Cell
 		void setID(std::vector<int>* idI_p, int default_value);
 		void setIDA(std::vector<int>* idA_p);
 		void setIDInit(int idInit);
+		void detectPattern();
 		void update(int function);
 
 		///////
@@ -128,7 +126,7 @@ class Cell
 		void printNeighbors();
 		void printCell();
 		void printPatternsMap();
+		void printPattern();
 };
-
 
 #endif

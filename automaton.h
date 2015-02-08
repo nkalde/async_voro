@@ -28,7 +28,8 @@ class Automaton{
 		void setLig(int lig){this->lig=lig;}
 		void setCol(int col){this->col=col;}
 		void setCells();
-
+		void detectPattern(Cell *cell);//to put in cell class in the end with communication with other cells
+		
 		//update
 		void synchronous_update(int function);
 		void asynchronous_update(int function);

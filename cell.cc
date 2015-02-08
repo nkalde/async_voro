@@ -10,7 +10,7 @@ const std::vector<std::vector<bool> > Cell::class6 = {{true,true,true,true,true}
 const std::vector<std::vector<bool> > Cell::class7 = {{false,false,false,false,false}};
 const std::vector<std::vector<std::vector<bool> > > Cell::classes = {Cell::class1, Cell::class2, Cell::class3, Cell::class4, Cell::class5, Cell::class6, Cell::class7};
 
-const std::map<std::vector<bool>,std::vector<int> > Cell::computePatternMap(){
+std::map<std::vector<bool>,std::vector<int> > Cell::computePatternMap(){
 	int cnt=0;
 	std::map<std::vector<bool>,std::vector<int> > mapPattern;
 	for (int i=0; i< (Cell::classes).size(); i++){
@@ -21,7 +21,7 @@ const std::map<std::vector<bool>,std::vector<int> > Cell::computePatternMap(){
 	}
 	return mapPattern;
 }
-const std::map<std::vector<bool>,std::vector<int> > Cell::patternsMap = Cell::computePatternMap();
+std::map<std::vector<bool>,std::vector<int> > Cell::patternsMap = Cell::computePatternMap();
 
 //CONSTRUCTORS
 Cell::Cell(int idInit, int i, int j){this->init(idInit,i,j);}
@@ -89,6 +89,7 @@ void Cell::setSite(bool site){this->site = site;}
 void Cell::setD1(int d1){this->d1 = d1;}
 void Cell::setBisector(int bis){this->bis = bis;}
 void Cell::setPattern(std::vector<int>* pattern_p){
+	std::cerr << "setPattern" << std::endl;
 	this->pattern[0] = (*pattern_p)[0];
 	this->pattern[1] = (*pattern_p)[1];
 	this->pattern[2] = (*pattern_p)[2];
@@ -107,10 +108,6 @@ void Cell::update(int function){
 	}
 }
 
-void detectPattern(){
-
-}
-
 //PRINT
 void Cell::printNeighbors(){
 	std::cerr << "[";
@@ -120,6 +117,15 @@ void Cell::printNeighbors(){
 	std::cerr << ']';
 	//std::cerr << std::endl;
 }
+
+void Cell::printPattern(){
+	std::cerr << "[";
+	for (std::vector<int>::iterator it= this->getPattern()->begin(); it != this->getPattern()->end(); it++){
+		std::cerr << (*it) << "," << "/";	
+	}
+	std::cerr << "]";
+}
+
 
 void Cell::printPatternsMap(){
 	for(std::map<std::vector<bool>,std::vector<int> >::const_iterator it = Cell::patternsMap.begin(); it != Cell::patternsMap.end(); ++it){
@@ -152,9 +158,7 @@ void Cell::printCell(){
 	std::cerr << " \tbis: "<< this->getBisector() << std::endl;
 
 	std::cerr << " \tpattern: " << std::endl;
-	for (std::vector<int>::iterator it= this->getPattern()->begin(); it != this->getPattern()->end(); it++){
-		std::cerr << "\t\t" << (*it) << std::endl;	
-	}
+	this->printPattern();
 
 	std::cerr << " \tidInit: " << this->getIDInit() << std::endl;
 
