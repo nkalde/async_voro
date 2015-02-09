@@ -2,12 +2,17 @@
 #define AUTOMATON_H
 
 #include "cell.h"
+#include <set>
 
 class Automaton{
 	private:
 		Cell** cells;
 		int lig;
 		int col;
+		bool betaEnabled;
+		bool deltaEnabled;
+		bool epsilonEnabled;
+
 	public:
 		Automaton();
 		Automaton(int lig,int col);
@@ -20,19 +25,26 @@ class Automaton{
 		}
 
 		//getters
+		bool getBeta();
+		bool getDelta();
+		bool getEpsilon();
 		int getLig();
 		int getCol();
 		Cell * getCellIJ(int i, int j);
 
 		//setters
-		void setLig(int lig){this->lig=lig;}
-		void setCol(int col){this->col=col;}
+		void setBeta(bool beta);
+		void setDelta(bool delta);
+		void setEpsilon(bool epsilon);
+		void setLig(int lig);
+		void setCol(int col);
 		void setCells();
 		void detectPattern(Cell *cell);//to put in cell class in the end with communication with other cells
 		
 		//update
 		void synchronous_update(int function);
 		void asynchronous_update(int function);
+		void update_pr(int i, int j);
 
 		//printing
 		void printAutomaton(int function);	
