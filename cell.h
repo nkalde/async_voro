@@ -96,7 +96,7 @@ class Cell
 		std::vector<int>* getConflict();
 
 		//integer set : set of cell id
-		std::unordered_set<int>* getID(int default_value);
+		std::unordered_set<int>* getID(int default_value=4);
 		std::unordered_set<int>* getIDI();
 		std::unordered_set<int>* getIDA();
 		int getIDInit();
@@ -104,7 +104,6 @@ class Cell
 		/////////
 		//setters
 		/////////
-
 		void setI(int i);
 		void setJ(int j);
 		void setNeighborI(int i, std::pair<int,int> neighbor);
@@ -114,7 +113,7 @@ class Cell
 		void setBisector(int bis);
 		void setPattern(std::vector<int>* pattern);
 		void setConflict(std::vector<int>* conflict);
-		void setID(std::vector<int>* idI_p, int default_value);
+		void setID(std::unordered_set<int>* idI_p, int default_value=5);
 		void setIDA(std::vector<int>* idA_p);
 		void setIDInit(int idInit);
 		void detectPattern();

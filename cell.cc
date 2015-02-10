@@ -61,7 +61,7 @@ int Cell::getBisector() {return this->bis;}
 std::vector<int>* Cell::getPattern() {return &this->pattern;}
 std::vector<int>* Cell::getConflict() {return &this->conflict;}
 
-std::unordered_set<int>* Cell::getID(int default_value=4){
+std::unordered_set<int>* Cell::getID(int default_value){
 	if (default_value == 4)
 		return &this->idC;
 	else
@@ -95,7 +95,7 @@ void Cell::setPattern(std::vector<int>* pattern_p){
 	this->pattern[2] = (*pattern_p)[2];
 }
 void Cell::setConflict(std::vector<int> * conflict_p){}
-void Cell::setID(std::vector<int> * idI_p, int default_value=5){}
+void Cell::setID(std::unordered_set<int> * idI_p, int default_value/*=5*/){}
 void Cell::setIDA(std::vector<int> * idA_p){}
 void Cell::setIDInit(int idInit){this->idInit = idInit;}
 void Cell::update(int function){

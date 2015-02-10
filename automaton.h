@@ -3,6 +3,7 @@
 
 #include "cell.h"
 #include <set>
+#include <algorithm>
 
 class Automaton{
 	private:
@@ -45,6 +46,13 @@ class Automaton{
 		void synchronous_update(int function);
 		void asynchronous_update(int function);
 		void update_pr(int i, int j);
+		void update_bis_thick(int i, int j);
+		void update_bis_thin(int i, int j);
+		void update_aid_min(int i, int j);
+		void update_avd_min(int i, int j);
+		void update_consensus_id(int i, int j);
+		void update_cvd(int i, int j);
+		int cantor(int a, int b);
 
 		//printing
 		void printAutomaton(int function);	
