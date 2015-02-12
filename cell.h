@@ -38,8 +38,8 @@ class Cell
 		std::vector<int> pattern;
 
 		//direction dis
-		std::vector< std::unordered_set<int> > ids;
-		std::vector<int> conflict;
+        std::vector<std::unordered_set<int> > ids;
+        int conflict;
 
 		//identifiers
 		int idInit; //intrinsic
@@ -51,6 +51,15 @@ class Cell
 		std::unordered_set<int> idA;
 
 	public:
+        //print constant
+        static const int print_distance = 0;
+        static const int print_site = 1;
+        static const int print_identifier_init = 2;
+        static const int print_identifier_comp = 6;
+        static const int print_bisector = 3;
+        static const int print_neighbors = 4;
+        static const int print_pattern = 5;
+
 		//classes
 		static const std::vector<std::vector<bool> > class1;
 		static const std::vector<std::vector<bool> > class2;
@@ -79,7 +88,7 @@ class Cell
 		int getJ();
 
 		//integer 2-tuple list : von neumann *neighbors (i,j)
-		std::vector< std::pair<int,int> >* getVonNeumannN();
+        const std::vector< std::pair<int,int> >& getVonNeumannN();
 
 		//boolean : site state
 		bool isSite();
@@ -91,14 +100,14 @@ class Cell
 		int getBisector();
 
 		//integer 3 list :  class number, pattern number, pattern count
-		std::vector<int>* getPattern();
+        const std::vector<int>& getPattern();
 
-		std::vector<int>* getConflict();
+        int getConflict();
 
 		//integer set : set of cell id
-		std::unordered_set<int>* getID(int default_value=4);
-		std::unordered_set<int>* getIDI();
-		std::unordered_set<int>* getIDA();
+        const std::unordered_set<int>& getID(int default_value=4);
+        const std::unordered_set<int>& getIDI();
+        const std::unordered_set<int>& getIDA();
 		int getIDInit();
 
 		/////////
@@ -112,7 +121,7 @@ class Cell
 		void setD1(int d1);
 		void setBisector(int bis);
 		void setPattern(std::vector<int>* pattern);
-		void setConflict(std::vector<int>* conflict);
+        void setConflict(int conflict);
 		void setID(std::unordered_set<int>* idI_p, int default_value=5);
 		void setIDA(std::vector<int>* idA_p);
 		void setIDInit(int idInit);
@@ -126,6 +135,7 @@ class Cell
 		void printCell();
 		void printPatternsMap();
 		void printPattern();
+        void printID();
 };
 
 #endif

@@ -1,0 +1,9 @@
+/home/parallels/ros_local/catkin_ws/src/voroads/src/automaton.cc
+/home/parallels/ros_local/catkin_ws/src/voroads/src/automaton.h
+/home/parallels/ros_local/catkin_ws/src/voroads/src/cell.cc
+/home/parallels/ros_local/catkin_ws/src/voroads/src/cell.h
+/home/parallels/ros_local/catkin_ws/src/voroads/src/test_cell.cc
+/home/parallels/ros_local/catkin_ws/src/voroads/src/test_bisector.h
+/home/parallels/ros_local/catkin_ws/src/voroads/src/test_bisector.cc
+/home/parallels/ros_local/catkin_ws/src/voroads/src/test_identification.h
+/home/parallels/ros_local/catkin_ws/src/voroads/src/test_identification.cc
