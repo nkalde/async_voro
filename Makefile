@@ -8,10 +8,10 @@ test_identification: test_identification.o cell.o automaton.o
 	${CC} ${CCFLAGS} test_identification.o cell.o automaton.o -o test_identification $(LIBS)
 
 test_bisector: test_bisector.o cell.o automaton.o
-	${CC} ${CCFLAGS} test_bisector.o cell.o automaton.o -o test_bisector
+	${CC} ${CCFLAGS} test_bisector.o cell.o automaton.o -o test_bisector ${LIBS}
 
 test_cell: test_cell.o cell.o automaton.o
-	${CC} ${CCFLAGS} test_cell.o cell.o automaton.o -o test_cell
+	${CC} ${CCFLAGS} test_cell.o cell.o automaton.o -o test_cell ${LIBS}
 
 test_identification.o:
 	${CC} ${CCFLAGS} -c test_identification.cc
