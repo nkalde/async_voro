@@ -7,3 +7,5 @@
 /home/parallels/ros_local/catkin_ws/src/voroads/src/test_bisector.cc
 /home/parallels/ros_local/catkin_ws/src/voroads/src/test_identification.h
 /home/parallels/ros_local/catkin_ws/src/voroads/src/test_identification.cc
+voronav_node.h
+voronav_node.cpp

@@ -1,8 +1,12 @@
 CC = g++
+INCFLAGS = "-I/home/parallels/jsoncpp/jsoncpp/include/"
 CCFLAGS = -std=c++11 `pkg-config --cflags opencv2`
 LIBS = `pkg-config --libs opencv2`
 
-all: test_cell test_bisector test_identification
+all: test_cell test_bisector test_identification voronav
+
+voronav: voronav_node.o
+	${CC} ${CCFLAGS} voronav_node.o -o voronav
 
 test_identification: test_identification.o cell.o automaton.o
 	${CC} ${CCFLAGS} test_identification.o cell.o automaton.o -o test_identification $(LIBS)
@@ -13,7 +17,10 @@ test_bisector: test_bisector.o cell.o automaton.o
 test_cell: test_cell.o cell.o automaton.o
 	${CC} ${CCFLAGS} test_cell.o cell.o automaton.o -o test_cell ${LIBS}
 
-test_identification.o:
+voronav_node.o: voronav_node.cc
+	${CC} ${CCFLAGS} ${INCFLAGS} -c voronav_node.cc
+
+test_identification.o: test_identification.cc
 	${CC} ${CCFLAGS} -c test_identification.cc
 	
 test_bisector.o: test_bisector.cc
