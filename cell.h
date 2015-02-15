@@ -3,7 +3,7 @@
 
 #include <limits>
 #include <utility>
-#include <unordered_set>
+#include <set>
 #include <string.h>
 #include <vector>
 #include <iostream>
@@ -40,17 +40,17 @@ class Cell
 		std::vector<int> pattern;
 
 		//direction dis
-		std::vector<std::unordered_set<int> > ids;
+		std::vector<std::set<int> > ids;
 		int conflict;
 
 		//identifiers
 		int idInit; //intrinsic
 		//initial
-		std::unordered_set<int> idI;
+		std::set<int> idI;
 		//computed
-		std::unordered_set<int> idC;
+		std::set<int> idC;
 		//area
-		std::unordered_set<int> idA;
+		std::set<int> idA;
 
 	public:
 		//print constant
@@ -65,14 +65,18 @@ class Cell
 		static const int print_pattern = 5;
 
 		//classes
-		static const std::vector<std::vector<bool> > class1;
-		static const std::vector<std::vector<bool> > class2;
-		static const std::vector<std::vector<bool> > class3;
-		static const std::vector<std::vector<bool> > class4;
-		static const std::vector<std::vector<bool> > class5;
-		static const std::vector<std::vector<bool> > class6;
-		static const std::vector<std::vector<bool> > class7;
-		static const std::vector<std::vector<std::vector<bool> > > classes;
+		
+		//arrays
+		static const bool class1_array[1][5];
+		static const bool class2_array[4][5];
+		static const bool class3_array[2][5];
+		static const bool class4_array[4][5];
+		static const bool class5_array[4][5];
+		static const bool class6_array[1][5];
+		static const bool class7_array[1][5];
+
+		static std::vector<std::vector<std::vector<bool> > > classes;
+		
 		static std::map<std::vector<bool>,std::vector<int> > patternsMap;
 		static std::map<std::vector<bool>,std::vector<int> > computePatternMap();
 
@@ -109,9 +113,9 @@ class Cell
 		int getConflict();
 
 		//integer set : set of cell id
-		const std::unordered_set<int>& getID(int default_value=4);
-		const std::unordered_set<int>& getIDI();
-		const std::unordered_set<int>& getIDA();
+		const std::set<int>& getID(int default_value=4);
+		const std::set<int>& getIDI();
+		const std::set<int>& getIDA();
 		int getIDInit();
 
 		/////////
@@ -126,7 +130,7 @@ class Cell
 		void setBisector(int bis);
 		void setPattern(std::vector<int>* pattern);
 		void setConflict(int conflict);
-		void setID(std::unordered_set<int>* idI_p, int default_value=5);
+		void setID(std::set<int>* idI_p, int default_value=5);
 		void setIDA(std::vector<int>* idA_p);
 		void setIDInit(int idInit);
 		void detectPattern();

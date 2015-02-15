@@ -20,6 +20,8 @@ class Automaton{
 		static const int bis_thin = 1;
 		static const int aid_min = 2;
 		static const int avd_min = 3;
+		static const int aid = 7;
+		static const int avd = 8;
 		static const int consensus_id = 4;
 		static const int cvd = 5;
 		static const int pr = 6;
@@ -60,6 +62,8 @@ class Automaton{
 		void update_bis_thin(int i, int j);
 		void update_aid_min(int i, int j);
 		void update_avd_min(int i, int j);
+		void update_aid(int i, int j);
+		void update_avd(int i, int j);
 		void update_consensus_id(int i, int j);
 		void update_cvd(int i, int j);
 		void update_pr(int i, int j);

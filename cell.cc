@@ -1,32 +1,63 @@
 #include "cell.h"
 
 //CLASS ATTRIBUTES
-const std::vector<std::vector<bool> >	Cell::class1 = {{true,false,false,false,false}};
-const std::vector<std::vector<bool> > Cell::class2 = {{true,true,true,false,false},{true,true,false,false,true},{true,false,false,true,true},{true,false,true,true,false}};
-const std::vector<std::vector<bool> > Cell::class3 = {{true,true,false,true,false},{true,false,true,false,true}};
-const std::vector<std::vector<bool> > Cell::class4 = {{true,true,false,false,false},{true,false,true,false,false},{true,false,false,true,false},{true,false,false,false,true}};
-const std::vector<std::vector<bool> > Cell::class5 = {{true,true,true,true,false},{true,true,true,false,true},{true,false,true,true,true},{true,true,false,true,true}};
-const std::vector<std::vector<bool> > Cell::class6 = {{true,true,true,true,true}};
-const std::vector<std::vector<bool> > Cell::class7 = {{false,false,false,false,false}};
-const std::vector<std::vector<std::vector<bool> > > Cell::classes = {Cell::class1, Cell::class2, Cell::class3, Cell::class4, Cell::class5, Cell::class6, Cell::class7};
+
+const bool Cell::class1_array[1][5] = {{true,false,false,false,false}};
+const bool Cell::class2_array[4][5] = {{true,true,true,false,false},{true,true,false,false,true},{true,false,false,true,true},{true,false,true,true,false}};
+const bool Cell::class3_array[2][5] = {{true,true,false,true,false},{true,false,true,false,true}};
+const bool Cell::class4_array[4][5] = {{true,true,false,false,false},{true,false,true,false,false},{true,false,false,true,false},{true,false,false,false,true}};
+const bool Cell::class5_array[4][5] = {{true,true,true,true,false},{true,true,true,false,true},{true,false,true,true,true},{true,true,false,true,true}};
+const bool Cell::class6_array[1][5] = {{true,true,true,true,true}};
+const bool Cell::class7_array[1][5] = {{false,false,false,false,false}};
+
+std::vector<std::vector<std::vector<bool> > > Cell::classes;
 
 std::map<std::vector<bool>,std::vector<int> > Cell::computePatternMap(){
+
+
+	std::vector<std::vector<bool> > class1;
+	std::vector<std::vector<bool> > class2;
+	std::vector<std::vector<bool> > class3;
+	std::vector<std::vector<bool> > class4;
+	std::vector<std::vector<bool> > class5;
+	std::vector<std::vector<bool> > class6;
+	std::vector<std::vector<bool> > class7;
+	
+	for (int i=0;i<1;++i){class1.push_back(std::vector<bool>(Cell::class1_array[i],Cell::class1_array[i]+5));}	
+	for (int i=0;i<4;++i){class2.push_back(std::vector<bool>(Cell::class2_array[i],Cell::class2_array[i]+5));}
+	for (int i=0;i<2;++i){class3.push_back(std::vector<bool>(Cell::class3_array[i],Cell::class3_array[i]+5));}
+	for (int i=0;i<4;++i){class4.push_back(std::vector<bool>(Cell::class4_array[i],Cell::class4_array[i]+5));}
+	for (int i=0;i<4;++i){class5.push_back(std::vector<bool>(Cell::class5_array[i],Cell::class5_array[i]+5));}
+	for (int i=0;i<1;++i){class6.push_back(std::vector<bool>(Cell::class6_array[i],Cell::class6_array[i]+5));}
+	for (int i=0;i<1;++i){class7.push_back(std::vector<bool>(Cell::class7_array[i],Cell::class7_array[i]+5));}
+	
+	Cell::classes.push_back(class1);
+	Cell::classes.push_back(class2);
+	Cell::classes.push_back(class3);
+	Cell::classes.push_back(class4);
+	Cell::classes.push_back(class5);
+	Cell::classes.push_back(class6);
+	Cell::classes.push_back(class7);
+
 	int cnt=0;
 	std::map<std::vector<bool>,std::vector<int> > mapPattern;
 	for (int i=0; i< (Cell::classes).size(); i++){
 		for (int j=0;j<Cell::classes[i].size();j++){
-			mapPattern[Cell::classes[i][j]] = {i+1,j+1,-cnt};
+			mapPattern[Cell::classes[i][j]].push_back(i+1);	
+			mapPattern[Cell::classes[i][j]].push_back(j+1);
+			mapPattern[Cell::classes[i][j]].push_back(-cnt);
 			cnt++;
 		}
 	}
 	return mapPattern;
 }
+
 std::map<std::vector<bool>,std::vector<int> > Cell::patternsMap = Cell::computePatternMap();
 
 //CONSTRUCTORS
 Cell::Cell(int idInit, int i, int j){this->init(idInit,i,j);}
 
-Cell::Cell() : Cell(-1,-1,-1){}//remove
+Cell::Cell(){this->init(-1,-1,-1);};//remove
 
 void Cell::init(int idInit, int i, int j){
 	this->idInit = idInit;
@@ -66,7 +97,7 @@ int Cell::getBisector() {return this->bis;}
 const std::vector<int>& Cell::getPattern() {return this->pattern;}
 int Cell::getConflict() {return this->conflict;}
 
-const std::unordered_set<int>& Cell::getID(int default_value){
+const std::set<int>& Cell::getID(int default_value){
 	if (default_value == 4)
 		return this->idC;
 	else
@@ -76,9 +107,9 @@ const std::unordered_set<int>& Cell::getID(int default_value){
 			return this->idC;
 }
 
-const std::unordered_set<int>& Cell::getIDI(){return this->idI;}
+const std::set<int>& Cell::getIDI(){return this->idI;}
 
-const std::unordered_set<int>& Cell::getIDA(){return this->idA;}
+const std::set<int>& Cell::getIDA(){return this->idA;}
 
 int Cell::getIDInit(){return this->idInit;}
 
@@ -109,7 +140,7 @@ void Cell::setPattern(std::vector<int>* pattern_p){
 
 void Cell::setConflict(int conflict_p){this->conflict = conflict_p;}
 
-void Cell::setID(std::unordered_set<int> * idI_p, int default_value/*=5*/){
+void Cell::setID(std::set<int> * idI_p, int default_value/*=5*/){
 	if (default_value == 5){
 
 		this->idC.clear();
@@ -184,7 +215,7 @@ void Cell::printPatternsMap(){
 }
 
 void Cell::printID(){
-	for (std::unordered_set<int>::const_iterator it = this->getID().begin(); it != this->getID().end(); it++){
+	for (std::set<int>::const_iterator it = this->getID().begin(); it != this->getID().end(); it++){
 		std::cerr << (*it);
 	}
 }
@@ -195,7 +226,7 @@ void Cell::printID_line(){
 	for (int i =0; i<4; i++){
 		intRep+='#'+i+'#';	
 		//std::cerr << "#" << i << "#";
-		for (std::unordered_set<int>::const_iterator it = this->getID(i).begin(); it != this->getID().end(); it++){
+		for (std::set<int>::const_iterator it = this->getID(i).begin(); it != this->getID().end(); it++){
 			intRep+=(*it);
 			//std::cerr << (*it);
 		}
@@ -225,14 +256,14 @@ void Cell::printCell(){
 	std::cerr << " \tidInit: " << this->getIDInit() << std::endl;
 
 	std::cerr << " \tids: " << std::endl;
-	for (std::vector<std::unordered_set<int> >::iterator it= this->ids.begin(); it != this->ids.end(); it++){
-		for (std::unordered_set<int>::iterator it2 = it->begin(); it2 != it->end(); it2++){
+	for (std::vector<std::set<int> >::iterator it= this->ids.begin(); it != this->ids.end(); it++){
+		for (std::set<int>::iterator it2 = it->begin(); it2 != it->end(); it2++){
 			std::cerr << "\t\t" << (*it2) << std::endl;
 		}
 	}
 
 	std::cerr << " \tidI: " << std::endl;
-	for (std::unordered_set<int>::const_iterator it = this->getIDI().begin(); it != this->getIDI().end(); it++){
+	for (std::set<int>::const_iterator it = this->getIDI().begin(); it != this->getIDI().end(); it++){
 		std::cerr << "\t\t" << (*it) << std::endl;
 	}
 
@@ -240,7 +271,7 @@ void Cell::printCell(){
 	this->printID();
 
 	std::cerr << " \tidA: " << std::endl;
-	for (std::unordered_set<int>::const_iterator it = this->getIDA().begin(); it != this->getIDA().end(); it++){
+	for (std::set<int>::const_iterator it = this->getIDA().begin(); it != this->getIDA().end(); it++){
 		std::cerr << "\t\t" << (*it) << std::endl;
 	}
 }

@@ -1,27 +1,27 @@
 #include "test_identification.h"
 
-void test_aid(){
+void test_avd(){
 	std::cerr << "CASE 1" << std::endl;
-	Automaton *a = new Automaton("/home/parallels/ros_local/catkin_ws/src/voroads/src/bitmaps/map2.png");
-	a->asynchronous_update(Automaton::avd_min);
+	Automaton *a = new Automaton("bitmaps/map2.png");
+	a->asynchronous_update(Automaton::avd);
 	a->drawAutomaton();
 	delete a;
 	
 	std::cerr << "CASE 2" << std::endl;
-	a=new Automaton("/home/parallels/ros_local/catkin_ws/src/voroads/src/bitmaps/map3.png");
-	a->asynchronous_update(Automaton::avd_min);
+	a=new Automaton("bitmaps/map3.png");
+	a->asynchronous_update(Automaton::avd);
 	a->drawAutomaton();
 	delete a;
 
 	std::cerr << "CASE 3" << std::endl;
-	a=new Automaton("/home/parallels/ros_local/catkin_ws/src/voroads/src/bitmaps/map4.png");
-	a->asynchronous_update(Automaton::avd_min);
+	a=new Automaton("bitmaps/map4.png");
+	a->asynchronous_update(Automaton::avd);
 	a->drawAutomaton();
 	delete a;
 
 	/*
 	std::cerr << "CASE 4" << std::endl;
-	a=new Automaton("/home/parallels/ros_local/catkin_ws/src/voroads/src/bitmaps/map5.png");
+	a=new Automaton("bitmaps/map5.png");
 	a->asynchronous_update(Automaton::avd_min);
 	a->drawAutomaton();
 	delete a;
@@ -29,22 +29,22 @@ void test_aid(){
 }
 
 
-void test_lid(){	
+void test_lvd(){	
 	std::cerr << "CASE 1" << std::endl;
-	Automaton *a = new Automaton("/home/parallels/ros_local/catkin_ws/src/voroads/src/bitmaps/map2.png");
+	Automaton *a = new Automaton("bitmaps/map2.png");
 	a->asynchronous_update(Automaton::cvd);
 	a->drawAutomaton();
 	delete a;
 
 	std::cerr << "CASE 2" << std::endl;
-	a= new Automaton("/home/parallels/ros_local/catkin_ws/src/voroads/src/bitmaps/map3.png");
+	a= new Automaton("bitmaps/map3.png");
 	a->asynchronous_update(Automaton::cvd);
 	a->drawAutomaton();
 	delete a;
 
 
 	std::cerr << "CASE 3" << std::endl;
-	a=new Automaton("/home/parallels/ros_local/catkin_ws/src/voroads/src/bitmaps/map4.png");
+	a=new Automaton("bitmaps/map4.png");
 	a->asynchronous_update(Automaton::cvd);
 	a->drawAutomaton();
 	delete a;
@@ -52,7 +52,7 @@ void test_lid(){
 
 	/*
 	std::cerr << "CASE 4" << std::endl;
-	a=new Automaton("/home/parallels/ros_local/catkin_ws/src/voroads/src/bitmaps/map5.png");
+	a=new Automaton("bitmaps/map5.png");
 	a->asynchronous_update(Automaton::cvd);
 	a->drawAutomaton();
 	delete a;
@@ -61,10 +61,10 @@ void test_lid(){
 
 int main(int argc, char *argv[]){
 	//area
-	//test_aid();
+	//test_avd();
 
 	//line
-	test_lid();
+	test_lvd();
 
 	return 0;
 }

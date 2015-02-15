@@ -4,8 +4,9 @@ Automaton::Automaton(int lig, int col){
 	this->init(lig,col);
 }
 
-Automaton::Automaton() : Automaton(0,0){}
-
+Automaton::Automaton(){
+	this->init(0,0);
+}
 
 //create first map
 Automaton::Automaton(std::string filename){
@@ -75,7 +76,6 @@ void Automaton::setEpsilon(bool epsilon){this->epsilonEnabled=epsilon;}
 void Automaton::setLig(int lig){this->lig=lig;}
 void Automaton::setCol(int col){this->col=col;}
 
-//TODO
 void Automaton::synchronous_update(int function){}
 
 void Automaton::asynchronous_update(int function){
@@ -113,16 +113,29 @@ void Automaton::asynchronous_update(int function){
 						   this->update_pr(randI,randJ);
 						   break;
 					   }
+
+			case Automaton::aid:{
+						    this->update_aid(randI,randJ);
+						    break;
+					    }
+			case Automaton::avd:{
+						    this->update_avd(randI,randJ);
+						    break;
+					    }
 		}
 		cnt++;
-		if (cnt%(3*this->lig*this->col*this->lig*this->col) == 0)
+		//if (cnt%(this->lig*this->col*this->lig*this->col) == 0)
+		if (cnt%(this->lig*this->col) == 0)
 			return;
 	}
 }
 
 void Automaton::detectPattern(Cell *cell){//to put in cell class in the end with communication with other cells
 	std::vector<std::pair<int,int> > vN = cell->getVonNeumannN();
-	std::vector<bool> localPat = {false,false,false,false,false};
+
+	//std::vector<bool> localPat({false,false,false,false,false});
+	bool localPatArray[] = {false,false,false,false,false};
+	std::vector<bool> localPat(localPatArray,localPatArray + sizeof(localPatArray)/sizeof(localPatArray[0]));
 
 	//if (cell->isSite()){
 	localPat[0] = cell->isSite();
@@ -232,11 +245,11 @@ void Automaton::update_pr(int i,int j){
 		//    std::cerr << "before" << d->getID() << std::endl;
 		//std::cerr << "epsilon size: " << epsilonN.size() << std::endl;
 
-		std::unordered_set<int> idS;
+		std::set<int> idS;
 		for(int i=0; i< epsilonN.size();i++){
 			Cell* cellN = this->getCellIJ(dVNN[epsilonN[i]]);
 			//id update
-			idS.insert(cellN->getID((i+2)%4).begin(),cellN->getID((i+2)%4).end());
+			idS.insert(cellN->getID((epsilonN[i]+2)%4).begin(),cellN->getID((epsilonN[i]+2)%4).end());
 			// std::cerr << cellN->getID() << std::endl;
 		}
 		//if (epsilon.size() > 0)
@@ -317,7 +330,7 @@ void Automaton::update_bis_thin(int i, int j){//,automatonCS,automatonNS){
 	bool c2 = dID_size <= 1 and inter_size > 0 and not d->isSite();
 	bool c2p = c2 and siteNeighbors_size < 1;
 
-	c2=c2p;
+	//c2=c2p;
 	d->setBisector(0);
 	if (c1)
 		d->setBisector(1);
@@ -325,9 +338,10 @@ void Automaton::update_bis_thin(int i, int j){//,automatonCS,automatonNS){
 		d->setBisector(2);
 }
 
-//Area Identification
-void Automaton::update_aid_min(int i,int j){
-	Cell * d= this->getCellIJ(i,j);
+//IMPROVE ROBUSTNESS by clearing bad identifiers
+//Area Identification dynamic case
+void Automaton::update_aid(int i, int j){
+	Cell *d = this->getCellIJ(i,j);
 	const std::vector<std::pair<int,int> > dVNN = d->getVonNeumannN();
 
 	//C0 von Neumann neighbors
@@ -338,26 +352,76 @@ void Automaton::update_aid_min(int i,int j){
 		}
 	}
 
+
 	std::vector<std::pair<int,int> > sites;
+	std::vector<std::pair<int,int> > nonsites;
+	std::set<int> idS;
+	idS.insert(d->getID().begin(),d->getID().end());
 	for (int i=0; i<c0.size();i++){
 		if (this->getCellIJ(c0[i])->isSite()){
 			sites.push_back(c0[i]);
 		}
+		else{
+			nonsites.push_back(c0[i]);
+		}
 	}
-
 	//C1 multiple ids
 	bool c1 = d->isSite() and sites.size() > 0;
 	if (c1){
-		std::unordered_set<int> idS;
-		idS.insert(d->getID().begin(),d->getID().end());
+
 		for (int i=0;i<sites.size();i++){
 			idS.insert(this->getCellIJ(sites[i])->getID().begin(),this->getCellIJ(sites[i])->getID().end());
 		}
-		std::unordered_set<int>::iterator iter = std::min_element(idS.begin(),idS.end());
-		int idSMin = *iter;
-		idS.clear();
-		idS.insert(idSMin);
-		d->setID(&idS);
+
+	}
+	//remove from ids
+	for (std::set<int>::iterator it = idS.begin(); it != idS.end(); it++){
+		for (int j=0;j<nonsites.size();j++){
+			if ((*it)==this->getCellIJ(nonsites[j])->getIDInit())
+			{
+				idS.erase(*it);
+			}  
+		}
+	}
+	d->setID(&idS);
+}
+
+//Area Identification static case only
+void Automaton::update_aid_min(int i,int j){
+	Cell * d= this->getCellIJ(i,j);
+
+	if (d->isSite()){
+		const std::vector<std::pair<int,int> > dVNN = d->getVonNeumannN();
+
+		//C0 von Neumann neighbors
+		std::vector<std::pair<int,int> > c0;
+		for (int i=0; i<dVNN.size();i++){
+			if (dVNN[i].first != -1){
+				c0.push_back(dVNN[i]);
+			}
+		}
+
+		std::vector<std::pair<int,int> > sites;
+		for (int i=0; i<c0.size();i++){
+			if (this->getCellIJ(c0[i])->isSite()){
+				sites.push_back(c0[i]);
+			}
+		}
+
+		//C1 multiple ids
+		bool c1 = d->isSite() and sites.size() > 0;
+		if (c1){
+			std::set<int> idS;
+			idS.insert(d->getID().begin(),d->getID().end());
+			for (int i=0;i<sites.size();i++){
+				idS.insert(this->getCellIJ(sites[i])->getID().begin(),this->getCellIJ(sites[i])->getID().end());
+			}
+			std::set<int>::iterator iter = std::min_element(idS.begin(),idS.end());
+			int idSMin = *iter;
+			idS.clear();
+			idS.insert(idSMin);
+			d->setID(&idS);
+		}
 	}
 }
 
@@ -369,7 +433,9 @@ void Automaton::update_consensus_id(int i, int j){
 	int directionID = -1;
 	if (d->isSite()){
 		//std::cerr << "site" << std::endl;
-		std::vector<bool> localPat = {false, false, false, false, false};
+
+		bool localPatArray[] = {false,false,false,false,false};
+		std::vector<bool> localPat(localPatArray,localPatArray+sizeof(localPatArray) / sizeof(localPatArray[0]));
 		localPat[0] = d->isSite();
 		const std::vector<std::pair<int,int> > vN = d->getVonNeumannN();
 		for (int k=0;k<vN.size();k++){
@@ -388,7 +454,7 @@ void Automaton::update_consensus_id(int i, int j){
 		std::vector<bool> pattern=Cell::classes[patCl-1][patClN-1];
 
 		//default edge id
-		std::unordered_set<int> newID;
+		std::set<int> newID;
 		newID.insert(d->getPattern()[2]);
 		d2->setPattern(&pat_Cl_Nb);
 		d2->setID(&newID);
@@ -399,7 +465,8 @@ void Automaton::update_consensus_id(int i, int j){
 			std::cerr << "isolated" << std::endl;
 			//CASE 0
 			newID.clear();
-			newID.insert(d->getIDInit());
+
+			newID.insert(d->getIDI().begin(),d->getIDI().end());
 			d2->setID(&newID);
 		}
 		//CORNERS
@@ -409,18 +476,13 @@ void Automaton::update_consensus_id(int i, int j){
 			//CASE 2
 			std::vector<int> sN;
 			for (int i=0;i<pattern.size();i++){
-				if (pattern.at(i) and i!=0){
+				if (pattern[i]==true and i!=0){
 					sN.push_back(i-1);
 				}
 			}
-			std::vector<std::pair<int,int> > sNeighbors;
+
 			for (int i=0;i<sN.size();i++){
-				if (d->getVonNeumannN()[i].first != -1){
-					sNeighbors.push_back(d->getVonNeumannN()[i]);
-				}
-			}
-			for (int i=0;i<sN.size();i++){
-				std::pair<int,int> a = d->getVonNeumannN()[i];
+				std::pair<int,int> a = d->getVonNeumannN()[sN[i]];
 				if (a.first != -1){
 					Cell * neigh = this->getCellIJ(a.first,a.second);
 					const std::vector<int> patNeigh = neigh->getPattern();
@@ -518,6 +580,7 @@ void Automaton::update_consensus_id(int i, int j){
 						newID.insert(patNeighNum);
 						d2->setID(&newID,directionID);
 					}
+
 					if (patNeighCl == 5){
 						//print('CASE7') #CORNER TAKES DIRECTION Pattern
 						if (((patNum == -1 and (patNeighNum==-11 or patNeighNum==-12)) or (patNum==-2 and (patNeighNum==-12 or patNeighNum==-14)) or (patNum==-3 and (patNeighNum==-13 or patNeighNum==-14)) or (patNum==-4 and (patNeighNum==-11 or patNeighNum==-13)))){
@@ -539,25 +602,19 @@ void Automaton::update_consensus_id(int i, int j){
 					}
 				}
 			}
+
 			//EXT
 			if (patCl==4){
 				//std::cerr << "ext" << std::endl;
-				std::vector<int> *vN;
+				std::vector<int> vN;
 				for (int i=0;i<pattern.size();i++){
-					if (pattern.at(i)==true and i !=0){
-						vN->push_back(i-1);
+					if (pattern[i]==true and i !=0){
+						vN.push_back(i-1);
 					}
 				}
-				std::vector<std::pair<int,int> >* vNeighbors;
-				for (int i=0;i<vN->size();i++){
-					int vn = vN->at(i);
-					if (d->getVonNeumannN()[vn].first != -1){
-						vNeighbors->push_back(d->getVonNeumannN()[vn]);
-					}
-				}
-
-				for (int i=0;i<vN->size();i++){
-					int direction = vN->at(i);
+				
+				for (int i=0;i<vN.size();i++){
+					int direction = vN[i];
 					std::pair<int,int> a=d->getVonNeumannN()[direction];
 					if (a.first != -1){
 						Cell * neigh = this->getCellIJ(a.first,a.second);
@@ -595,74 +652,75 @@ void Automaton::update_consensus_id(int i, int j){
 									indexFalse = distance(patternN.begin(),it);
 								}
 								directionID=indexFalse-1;
-
 								newID.clear();
 								newID.insert(patNeighNum);
 								d2->setID(&newID,directionID);
-								if (neigh->getConflict() != -1){ //#PB
-									//print("CONFLICT")
-									int indexFalse = -1;
-									std::vector<bool>::iterator it = patternN.begin();
-									it=find(patternN.begin(),patternN.end(),false);
-									if (it != patternN.end())
-									{
-										indexFalse = distance(patternN.begin(),it);
-									}
-									int directionID=(indexFalse-1+2)%4;
-									newID.insert(neigh->getConflict());
-									d2->setID(&newID,directionID);
-									int directionID2=(direction+2)%4;
-									d2->setID(&newID,directionID2);
-									//print(d.i,d.j,newID,directionID,directionID2);
-									//direction id was false
+							}
+							if (neigh->getConflict() != -1){ //#PB
+								//print("CONFLICT")
+								int indexFalse = -1;
+								std::vector<bool>::iterator it = patternN.begin();
+								it=find(patternN.begin(),patternN.end(),false);
+								if (it != patternN.end())
+								{
+									indexFalse = distance(patternN.begin(),it);
 								}
+								int directionID=(indexFalse-1+2)%4;
+								newID.clear();
+								newID.insert(neigh->getConflict());
+								d2->setID(&newID,directionID);
+								int directionID2=(direction+2)%4;
+								d2->setID(&newID,directionID2);
+								//print(d.i,d.j,newID,directionID,directionID2);
+								//direction id was false
 							}
 						}
 					}
 				}
 			}
-		}
 
-		//direction id was false
-		//DIRECTIONS
-		if (patCl==5){
-			//std::cerr << "directions" << std::endl;
-			//print("DIRECTIONS")
-			std::vector<int> sN;
-			for (int i=0; i<pattern.size() ; i++){
-				if (pattern[i] and i !=0){
-					sN.push_back(i-1);
+			//direction id was false
+			//DIRECTIONS
+			if (patCl==5){
+				//std::cerr << "directions" << std::endl;
+				//print("DIRECTIONS")
+				std::vector<int> sN;
+				for (int i=0; i<pattern.size() ; i++){
+					if (pattern[i] == true and i !=0){
+						sN.push_back(i-1);
+					}
 				}
-			}
-			int indexFalse = -1;
-			std::vector<bool>::iterator it = pattern.begin();
-			it=find(pattern.begin(),pattern.end(),false);
-			if (it != pattern.end())
-			{
-				indexFalse = distance(pattern.begin(),it);
-			}
-			int indexOppositeFalse=((indexFalse-1)+2)%4;
-			std::pair<int,int> a = d->getVonNeumannN()[indexOppositeFalse];
+				int indexFalse = -1;
+				std::vector<bool>::iterator it = pattern.begin();
+				it=find(pattern.begin(),pattern.end(),false);
+				if (it != pattern.end())
+				{
+					indexFalse = distance(pattern.begin(),it);
+				}
+				int indexOppositeFalse=((indexFalse-1)+2)%4;
+				std::pair<int,int> a = d->getVonNeumannN()[indexOppositeFalse];
 
-			if (a.first != -1){
-				Cell * neigh = this->getCellIJ(a.first,a.second);
-				std::vector<int> patNeigh = neigh->getPattern();
-				int patNeighCl = patNeigh[0]; //class number
-				int patNeighNum = patNeigh[2]; //pattern number
-				if (patNeighCl==2){ //CORNER
-					std::vector<int> tab = {(indexOppositeFalse+1)%4,(indexOppositeFalse+3)%4};
-					for (int j=0;j<tab.size();j++){
-						//print("DIRECTIONS ICI 2")
-						std::pair<int,int> e=d->getVonNeumannN()[j];
-						if (e.first != -1){
-							Cell * en = this->getCellIJ(e.first,e.second);
-							std::vector<int> patE = en->getPattern();
-							int patECl = patE[0];
-							int patENum = patE[2];
-							if (patECl == 4){ //EXTREMITY
-								//PROBLEM ICI A CORRIGER
-								//print(patNum,patNeighNum,patENum)
-								d2->setConflict(patNeighNum);
+				if (a.first != -1){
+					Cell * neigh = this->getCellIJ(a);
+					std::vector<int> patNeigh = neigh->getPattern();
+					int patNeighCl = patNeigh[0]; //class number
+					int patNeighNum = patNeigh[2]; //pattern number
+					if (patNeighCl==2){ //CORNER
+						int tabArray[] =  {(indexOppositeFalse+1)%4,(indexOppositeFalse+3)%4};
+						std::vector<int> tab(tabArray,tabArray+sizeof(tabArray)/sizeof(tabArray[0]));
+						for (int j=0;j<tab.size();j++){
+							//print("DIRECTIONS ICI 2")
+							std::pair<int,int> e=d->getVonNeumannN()[tab[j]];
+							if (e.first != -1){
+								Cell * en = this->getCellIJ(e);
+								std::vector<int> patE = en->getPattern();
+								int patECl = patE[0];
+								int patENum = patE[2];
+								if (patECl == 4){ //EXTREMITY
+									//PROBLEM ICI A CORRIGER
+									//print(patNum,patNeighNum,patENum)
+									d2->setConflict(patNeighNum);
+								}
 							}
 						}
 					}
@@ -675,6 +733,14 @@ void Automaton::update_consensus_id(int i, int j){
 //AREA VORONOI DIAGRAM
 void Automaton::update_avd_min(int i,int j){
 	this->update_aid_min(i,j);
+	this->update_pr(i,j);
+	this->update_bis_thin(i,j);
+}
+
+
+//AREA VORONOI DIAGRAM
+void Automaton::update_avd(int i,int j){
+	this->update_aid(i,j);
 	this->update_pr(i,j);
 	this->update_bis_thin(i,j);
 }
@@ -742,20 +808,27 @@ void Automaton::drawAutomaton(){
 	cv::Mat d1_img(this->getLig(),this->getCol(),CV_8U);
 	cv::Mat id_img(this->getLig(),this->getCol(),CV_8U);
 	cv::Mat bis_img(this->getLig(),this->getCol(),CV_8U);
-	
+
+	std::map< std::set<int>,int> mapIDs;
+	std::map< std::set<int>,int>::iterator it;
 	int max_d1 = -1;
 	for(int i=0;i<this->getLig();i++){
 		for (int j=0;j<this->getCol();j++){
 			if (max_d1 < this->getCellIJ(i,j)->getD1())
 				max_d1 = this->getCellIJ(i,j)->getD1();
+				it = mapIDs.find(this->getCellIJ(i,j)->getID());
+				if (it == mapIDs.end()){
+					mapIDs.insert(std::pair<std::set<int>,int>(this->getCellIJ(i,j)->getID(),mapIDs.size()+1));	
+				}
 		}
 	}	
-	
+
 	for(int i=0;i<this->getLig();i++){
 		for (int j=0;j<this->getCol();j++){
 			sites_img.at<uchar>(i,j) = this->getCellIJ(i,j)->isSite()?0:255;
 			d1_img.at<uchar>(i,j) = this->getCellIJ(i,j)->getD1()*255/(max_d1);
 			bis_img.at<uchar>(i,j) = this->getCellIJ(i,j)->getBisector()*255/2;;
+			id_img.at<uchar>(i,j) = mapIDs[this->getCellIJ(i,j)->getID()]*255/mapIDs.size();
 		}
 	}
 
@@ -774,6 +847,6 @@ void Automaton::drawAutomaton(){
 	cv::imshow(id_winname, id_img);
 	cv::imshow(bis_winname, bis_img);
 
-	cv::waitKey(0);
+	cv::waitKey(1);
 }
 

@@ -1,7 +1,8 @@
 CC = g++
 INCFLAGS = "-I/home/parallels/jsoncpp/jsoncpp/include/"
-CCFLAGS = -std=c++11 `pkg-config --cflags opencv2`
-LIBS = `pkg-config --libs opencv2`
+#CCFLAGS = -std=c++11 `pkg-config --cflags opencv2`
+CCFLAGS = `pkg-config --cflags opencv2`
+LIBS = -lstdc++ `pkg-config --libs opencv2`
 
 all: test_cell test_bisector test_identification voronav
 

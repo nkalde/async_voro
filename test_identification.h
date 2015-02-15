@@ -7,8 +7,8 @@
 #include <iostream>
 
 Automaton* map(std::string filename);
-void test_aid();
-void test_lid();
+void test_avd();
+void test_lvd();
 void automaton_img(Automaton* a);
 
 #endif // TEST_IDENTIFICATION_H
