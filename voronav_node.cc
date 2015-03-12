@@ -19,17 +19,17 @@ static pthread_mutex_t mutex_automaton = PTHREAD_MUTEX_INITIALIZER;
 void occupancyCallback(const std_msgs::String::ConstPtr& msg)
 {
 
-	ROS_INFO("OCCUPANCY DATA CALLBACK");
+	//ROS_INFO("OCCUPANCY DATA CALLBACK");
 	//ROS_INFO("I heard: [%s]", msg->data.c_str());
 	Json::Value data;
 	Json::Reader reader;
 	if (! reader.parse(msg->data,data,false) ){
-		ROS_INFO("JSON PARSING FAILED");
+		//ROS_INFO("JSON PARSING FAILED");
 	}
 	std::string class_name = data.get("__class__","none").asString();
 	int rows = data.get("rows",-1).asInt();
 	int cols = data.get("cols",-1).asInt();
-	ROS_INFO("rows x cols %d %d",rows,cols);
+	//ROS_INFO("rows x cols %d %d",rows,cols);
 	long int timestamp = data.get("timestamp",-1).asInt64();//pb
 	Json::Value intArray = data["intArray"];
 
@@ -52,7 +52,7 @@ void occupancyCallback(const std_msgs::String::ConstPtr& msg)
 
 static void * roadmapProcessing_threaded(void * p_data){
 	while(true){
-		ROS_INFO("ROADMAP PROCESSING");
+		//ROS_INFO("ROADMAP PROCESSING");
 		if (automaton != NULL){
 			pthread_mutex_lock(&mutex_automaton);
 			automaton->asynchronous_update(Automaton::cvd);
@@ -66,17 +66,17 @@ static void * roadmapProcessing_threaded(void * p_data){
 void occupancyCallback_threaded(const std_msgs::String::ConstPtr& msg)
 {
 
-	ROS_INFO("OCCUPANCY DATA CALLBACK");
+	//ROS_INFO("OCCUPANCY DATA CALLBACK");
 	//ROS_INFO("I heard: [%s]", msg->data.c_str());
 	Json::Value data;
 	Json::Reader reader;
 	if (! reader.parse(msg->data,data,false) ){
-		ROS_INFO("JSON PARSING FAILED");
+		//ROS_INFO("JSON PARSING FAILED");
 	}
 	std::string class_name = data.get("__class__","none").asString();
 	int rows = data.get("rows",-1).asInt();
 	int cols = data.get("cols",-1).asInt();
-	ROS_INFO("rows x cols %d %d",rows,cols);
+	//ROS_INFO("rows x cols %d %d",rows,cols);
 	long int timestamp = data.get("timestamp",-1).asInt64();//pb
 	Json::Value intArray = data["intArray"];
 
@@ -98,7 +98,7 @@ void occupancyCallback_threaded(const std_msgs::String::ConstPtr& msg)
 }
 
 std_msgs::String roadmapProcessing(){
-	ROS_INFO("ROADMAP PROCESSING");
+	//ROS_INFO("ROADMAP PROCESSING");
 	if (automaton != NULL){
 		automaton->asynchronous_update(Automaton::cvd);
 		automaton->drawAutomaton();
